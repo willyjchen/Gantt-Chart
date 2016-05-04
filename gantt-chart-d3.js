@@ -10,8 +10,8 @@ d3.gantt = function() {
     var margin = {
 	top : 20,
 	right : 40,
-	bottom : 20,
-	left : 150
+	bottom : 10,
+	left : 30
     };
     var selector = 'body';
     var timeDomainStart = d3.time.day.offset(new Date(),-3);
@@ -19,8 +19,8 @@ d3.gantt = function() {
     var timeDomainMode = FIT_TIME_DOMAIN_MODE;// fixed or fit
     var taskTypes = [];
     var taskStatus = [];
-    var height = document.body.clientHeight - margin.top - margin.bottom-5;
-    var width = document.body.clientWidth - margin.right - margin.left-5;
+    var height = function(){return d3.select(selector)[0][0].clientHeight - margin.top - margin.bottom-5};
+    var width = function(){return d3.select(selector)[0][0].clientWidth - margin.right - margin.left-5};
 
     var tickFormat = "%H:%M";
 
@@ -32,9 +32,9 @@ d3.gantt = function() {
 	return "translate(" + x(d.startDate) + "," + y(d.taskName) + ")";
     };
 
-    var x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]).clamp(true);
+    var x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width() ]).clamp(true);
 
-    var y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([ 0, height - margin.top - margin.bottom ], .1);
+    var y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([ 0, height() - margin.top - margin.bottom ], .1);
     
     var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
 	    .tickSize(8).tickPadding(8);
@@ -60,8 +60,8 @@ d3.gantt = function() {
     };
 
     var initAxis = function() {
-	x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]).clamp(true);
-	y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([ 0, height - margin.top - margin.bottom ], .1);
+	x = d3.time.scale().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width() ]).clamp(true);
+	y = d3.scale.ordinal().domain(taskTypes).rangeRoundBands([ 0, height() - margin.top - margin.bottom ], .1);
 	xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(d3.time.format(tickFormat)).tickSubdivide(true)
 		.tickSize(8).tickPadding(8);
 
@@ -76,12 +76,12 @@ d3.gantt = function() {
 	var svg = d3.select(selector)
 	.append("svg")
 	.attr("class", "chart")
-	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)
+	.attr("width", width() + margin.left + margin.right)
+	.attr("height", height() + margin.top + margin.bottom)
 	.append("g")
         .attr("class", "gantt-chart")
-	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)
+	.attr("width", width() + margin.left + margin.right)
+	.attr("height", height() + margin.top + margin.bottom)
 	.attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 	
       svg.selectAll(".chart")
@@ -103,7 +103,7 @@ d3.gantt = function() {
 	 
 	 svg.append("g")
 	 .attr("class", "x axis")
-	 .attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
+	 .attr("transform", "translate(0, " + (height() - margin.top - margin.bottom) + ")")
 	 .transition()
 	 .call(xAxis);
 	 
